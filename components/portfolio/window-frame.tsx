@@ -33,10 +33,10 @@ export function WindowFrame({ id, title, children, zIndex, isMaximized }: Window
       animate={{ 
         scale: 1, 
         opacity: 1,
-        width: isMaximized ? "calc(100% - 24px)" : width,
-        height: isMaximized ? "calc(100% - 140px)" : height,
-        top: isMaximized ? 44 : y,
-        left: isMaximized ? 12 : x,
+        width: isMaximized ? "calc(100% - 16px)" : width,
+        height: isMaximized ? "calc(100% - 160px)" : height,
+        top: isMaximized ? 40 : y,
+        left: isMaximized ? 8 : x,
       }}
       transition={{ 
         type: "spring", 
@@ -62,6 +62,7 @@ export function WindowFrame({ id, title, children, zIndex, isMaximized }: Window
       style={{ zIndex }}
       className={cn(
         "absolute flex flex-col bg-background rounded-xl shadow-2xl overflow-hidden border border-border/40 select-none",
+        "max-w-[calc(100vw-16px)] max-h-[calc(100vh-120px)]",
         isActive ? "ring-1 ring-primary/40 shadow-2xl" : "opacity-90"
       )}
     >

@@ -16,8 +16,8 @@ export function AboutMe() {
           <p className="text-xl text-primary font-semibold">Systems Engineer & Revenue Architect</p>
           <p className="text-muted-foreground italic">"Turning operational chaos into revenue-generating engines."</p>
           <div className="flex items-center justify-center md:justify-start gap-4 mt-3 text-sm text-muted-foreground">
-            <span className="flex items-center gap-1.5 bg-secondary/50 px-3 py-1 rounded-full"><Globe className="w-3.5 h-3.5" /> Remote-First (US/CA/EU)</span>
-            <span className="flex items-center gap-1.5 bg-secondary/50 px-3 py-1 rounded-full"><Mail className="w-3.5 h-3.5" /> hello@abie.dev</span>
+            <span className="flex items-center gap-1.5 bg-secondary/50 px-3 py-1 rounded-full"><Globe className="w-3.5 h-3.5" /> Remote-First</span>
+            <span className="flex items-center gap-1.5 bg-secondary/50 px-3 py-1 rounded-full"><Mail className="w-3.5 h-3.5" />hello@abiemaxey.com</span>
           </div>
         </div>
       </div>

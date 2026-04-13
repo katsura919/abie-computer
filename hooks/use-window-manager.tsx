@@ -49,17 +49,18 @@ export function WindowProvider({ children }: { children: React.ReactNode }) {
         focusWindow(id)
         return prev
       }
+      const isMobile = typeof window !== "undefined" && window.innerWidth < 768
       const newWindow = {
         id,
         title,
         isOpen: true,
         isMinimized: false,
-        isMaximized: false,
+        isMaximized: isMobile, // Default to maximized on mobile for better UX
         zIndex: maxZIndex + 1,
-        width: 1000,
-        height: 700,
-        x: "15%",
-        y: "10%"
+        width: isMobile ? window.innerWidth * 0.9 : 1000,
+        height: isMobile ? window.innerHeight * 0.7 : 700,
+        x: isMobile ? "5%" : "15%",
+        y: isMobile ? "8%" : "10%"
       }
       setActiveWindowId(id)
       setMaxZIndex(prevZ => prevZ + 1)
