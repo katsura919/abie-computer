@@ -15,34 +15,53 @@ interface WindowFrameProps {
 }
 
 export function WindowFrame({ id, title, children, zIndex, isMaximized }: WindowFrameProps) {
-  const { closeWindow, minimizeWindow, maximizeWindow, focusWindow, activeWindowId, windows, resizeWindow } = useWindowManager()
+  const { closeWindow, minimizeWindow, maximizeWindow, focusWindow, activeWindowId, windows, updateWindowRect } = useWindowManager()
   const isActive = activeWindowId === id
   const dragControls = useDragControls()
+  
+  const [isResizing, setIsResizing] = React.useState(false)
   
   const windowState = windows.find(w => w.id === id)
   const width = windowState?.width || 600
   const height = windowState?.height || 400
+  const x = windowState?.x ?? "25%"
+  const y = windowState?.y ?? "15%"
 
   return (
     <motion.div
-      initial={{ scale: 0.9, opacity: 0 }}
+      initial={{ scale: 0.8, opacity: 0 }}
       animate={{ 
         scale: 1, 
         opacity: 1,
-        width: isMaximized ? "100%" : width,
-        height: isMaximized ? "100%" : height,
-        top: isMaximized ? 0 : "15%",
-        left: isMaximized ? 0 : "25%",
+        width: isMaximized ? "calc(100% - 24px)" : width,
+        height: isMaximized ? "calc(100% - 140px)" : height,
+        top: isMaximized ? 44 : y,
+        left: isMaximized ? 12 : x,
       }}
-      exit={{ scale: 0.9, opacity: 0 }}
-      drag={!isMaximized}
+      transition={{ 
+        type: "spring", 
+        damping: 25, 
+        stiffness: 300,
+        width: isResizing ? { duration: 0 } : undefined,
+        height: isResizing ? { duration: 0 } : undefined,
+        top: isResizing ? { duration: 0 } : undefined,
+        left: isResizing ? { duration: 0 } : undefined
+      }}
+      exit={{ scale: 0.8, opacity: 0 }}
+      drag={!isMaximized && !isResizing}
       dragControls={dragControls}
       dragListener={false}
       dragMomentum={false}
+      onDragEnd={(e, info) => {
+        const el = (e.target as HTMLElement).closest(".absolute") as HTMLElement
+        if (el) {
+          updateWindowRect(id, { x: el.offsetLeft, y: el.offsetTop })
+        }
+      }}
       onPointerDown={() => focusWindow(id)}
       style={{ zIndex }}
       className={cn(
-        "absolute flex flex-col bg-background rounded-xl shadow-2xl overflow-hidden border border-border/40 select-none transition-all duration-300",
+        "absolute flex flex-col bg-background rounded-xl shadow-2xl overflow-hidden border border-border/40 select-none",
         isActive ? "ring-1 ring-primary/40 shadow-2xl" : "opacity-90"
       )}
     >
@@ -83,13 +102,96 @@ export function WindowFrame({ id, title, children, zIndex, isMaximized }: Window
       {/* Content Area */}
       <div className="flex-1 bg-background/50 backdrop-blur-sm overflow-auto custom-scrollbar relative">
         {children}
-        
-        {/* Resize Handle */}
-        {!isMaximized && (
+      </div>
+
+      {/* Resize Handles */}
+      {!isMaximized && (
+        <>
+          {/* Left Edge Resize */}
           <div 
-            className="absolute bottom-0 right-0 w-4 h-4 cursor-nwse-resize z-50 flex items-end justify-end p-0.5 group/resize"
+            className="absolute left-0 top-0 bottom-0 w-1.5 cursor-ew-resize z-50 pointer-events-auto"
             onPointerDown={(e) => {
               e.stopPropagation();
+              setIsResizing(true);
+              const startX = e.clientX;
+              const el = (e.target as HTMLElement).closest(".absolute") as HTMLElement;
+              const startRectX = el.offsetLeft;
+              const startWidth = width;
+
+              const handlePointerMove = (moveEvent: PointerEvent) => {
+                const delta = moveEvent.clientX - startX;
+                const newWidth = Math.max(300, startWidth - delta);
+                const newX = startRectX + (startWidth - newWidth);
+                updateWindowRect(id, { width: newWidth, x: newX });
+              };
+
+              const handlePointerUp = () => {
+                setIsResizing(false);
+                document.removeEventListener("pointermove", handlePointerMove);
+                document.removeEventListener("pointerup", handlePointerUp);
+              };
+
+              document.addEventListener("pointermove", handlePointerMove);
+              document.addEventListener("pointerup", handlePointerUp);
+            }}
+          />
+
+          {/* Right Edge Resize */}
+          <div 
+            className="absolute right-0 top-0 bottom-0 w-1.5 cursor-ew-resize z-50 pointer-events-auto"
+            onPointerDown={(e) => {
+              e.stopPropagation();
+              setIsResizing(true);
+              const startX = e.clientX;
+              const startWidth = width;
+
+              const handlePointerMove = (moveEvent: PointerEvent) => {
+                const newWidth = Math.max(300, startWidth + (moveEvent.clientX - startX));
+                updateWindowRect(id, { width: newWidth });
+              };
+
+              const handlePointerUp = () => {
+                setIsResizing(false);
+                document.removeEventListener("pointermove", handlePointerMove);
+                document.removeEventListener("pointerup", handlePointerUp);
+              };
+
+              document.addEventListener("pointermove", handlePointerMove);
+              document.addEventListener("pointerup", handlePointerUp);
+            }}
+          />
+
+          {/* Bottom Edge Resize */}
+          <div 
+            className="absolute bottom-0 left-0 right-0 h-2 cursor-ns-resize z-50 flex items-center justify-center group/resize pointer-events-auto"
+            onPointerDown={(e) => {
+              e.stopPropagation();
+              setIsResizing(true);
+              const startY = e.clientY;
+              const startHeight = height;
+
+              const handlePointerMove = (moveEvent: PointerEvent) => {
+                const newHeight = Math.max(200, startHeight + (moveEvent.clientY - startY));
+                updateWindowRect(id, { height: newHeight });
+              };
+
+              const handlePointerUp = () => {
+                setIsResizing(false);
+                document.removeEventListener("pointermove", handlePointerMove);
+                document.removeEventListener("pointerup", handlePointerUp);
+              };
+
+              document.addEventListener("pointermove", handlePointerMove);
+              document.addEventListener("pointerup", handlePointerUp);
+            }}
+          />
+
+          {/* Bottom Right Corner Resize */}
+          <div 
+            className="absolute bottom-0 right-0 w-4 h-4 cursor-nwse-resize z-[60] group/resize pointer-events-auto"
+            onPointerDown={(e) => {
+              e.stopPropagation();
+              setIsResizing(true);
               const startX = e.clientX;
               const startY = e.clientY;
               const startWidth = width;
@@ -98,10 +200,11 @@ export function WindowFrame({ id, title, children, zIndex, isMaximized }: Window
               const handlePointerMove = (moveEvent: PointerEvent) => {
                 const newWidth = Math.max(300, startWidth + (moveEvent.clientX - startX));
                 const newHeight = Math.max(200, startHeight + (moveEvent.clientY - startY));
-                resizeWindow(id, newWidth, newHeight);
+                updateWindowRect(id, { width: newWidth, height: newHeight });
               };
 
               const handlePointerUp = () => {
+                setIsResizing(false);
                 document.removeEventListener("pointermove", handlePointerMove);
                 document.removeEventListener("pointerup", handlePointerUp);
               };
@@ -109,11 +212,9 @@ export function WindowFrame({ id, title, children, zIndex, isMaximized }: Window
               document.addEventListener("pointermove", handlePointerMove);
               document.addEventListener("pointerup", handlePointerUp);
             }}
-          >
-            <div className="w-2 h-2 border-r-2 border-b-2 border-foreground/20 rounded-[1px] group-hover/resize:border-foreground/40 transition-colors" />
-          </div>
-        )}
-      </div>
+          />
+        </>
+      )}
     </motion.div>
   )
 }

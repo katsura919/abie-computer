@@ -11,6 +11,8 @@ export type WindowState = {
   zIndex: number
   width: number
   height: number
+  x: number | string
+  y: number | string
 }
 
 type WindowContextType = {
@@ -22,6 +24,7 @@ type WindowContextType = {
   maximizeWindow: (id: string) => void
   focusWindow: (id: string) => void
   resizeWindow: (id: string, width: number, height: number) => void
+  updateWindowRect: (id: string, rect: { width?: number; height?: number; x?: number | string; y?: number | string }) => void
 }
 
 const WindowContext = createContext<WindowContextType | undefined>(undefined)
@@ -54,7 +57,9 @@ export function WindowProvider({ children }: { children: React.ReactNode }) {
         isMaximized: false,
         zIndex: maxZIndex + 1,
         width: 600,
-        height: 400
+        height: 400,
+        x: "25%",
+        y: "15%"
       }
       setActiveWindowId(id)
       setMaxZIndex(prevZ => prevZ + 1)
@@ -86,6 +91,12 @@ export function WindowProvider({ children }: { children: React.ReactNode }) {
     ))
   }, [])
 
+  const updateWindowRect = useCallback((id: string, rect: { width?: number; height?: number; x?: number | string; y?: number | string }) => {
+    setWindows(prev => prev.map(w => 
+      w.id === id ? { ...w, ...rect } : w
+    ))
+  }, [])
+
   return (
     <WindowContext.Provider value={{ 
       windows, 
@@ -95,7 +106,8 @@ export function WindowProvider({ children }: { children: React.ReactNode }) {
       minimizeWindow, 
       maximizeWindow,
       focusWindow,
-      resizeWindow
+      resizeWindow,
+      updateWindowRect
     }}>
       {children}
     </WindowContext.Provider>
