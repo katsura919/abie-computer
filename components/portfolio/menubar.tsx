@@ -15,9 +15,10 @@ import { cn } from "@/lib/utils"
 
 interface MenuBarProps {
   onSearchClick?: () => void
+  onShutdown?: () => void
 }
 
-export function MenuBar({ onSearchClick }: MenuBarProps) {
+export function MenuBar({ onSearchClick, onShutdown }: MenuBarProps) {
   const [date, setDate] = React.useState(new Date())
 
   React.useEffect(() => {
@@ -60,7 +61,7 @@ export function MenuBar({ onSearchClick }: MenuBarProps) {
               <MenubarSeparator className="bg-white/10" />
               <MenubarItem>Sleep</MenubarItem>
               <MenubarItem>Restart...</MenubarItem>
-              <MenubarItem>Shut Down...</MenubarItem>
+              <MenubarItem onClick={onShutdown}>Shut Down...</MenubarItem>
               <MenubarSeparator className="bg-white/10" />
               <MenubarItem>Lock Screen</MenubarItem>
               <MenubarItem>Log Out...</MenubarItem>

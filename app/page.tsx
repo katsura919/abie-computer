@@ -6,8 +6,10 @@ import { Dock } from "@/components/portfolio/dock"
 import { Spotlight } from "@/components/portfolio/spotlight"
 import { WindowProvider, useWindowManager } from "@/hooks/use-window-manager"
 import { SettingsProvider } from "@/hooks/use-settings"
+import { BootScreen } from "@/components/portfolio/boot-screen"
+import { motion, AnimatePresence } from "framer-motion"
 
-function PageContent() {
+function PageContent({ onShutdown }: { onShutdown: () => void }) {
   const [isSpotlightOpen, setIsSpotlightOpen] = useState(false)
   const { activeWindowId, closeWindow } = useWindowManager()
 
@@ -39,7 +41,10 @@ function PageContent() {
 
   return (
     <div className="h-screen w-screen overflow-hidden flex flex-col font-sans">
-      <MenuBar onSearchClick={() => setIsSpotlightOpen(true)} />
+      <MenuBar 
+        onSearchClick={() => setIsSpotlightOpen(true)} 
+        onShutdown={onShutdown}
+      />
       <Desktop>
         {/* Desktop Content Area */}
         <div className="p-8">
@@ -60,10 +65,93 @@ function PageContent() {
 }
 
 export default function Page() {
+  const [powerStatus, setPowerStatus] = useState<"off" | "booting" | "on" | "shutting-down">("off")
+  const [isHydrated, setIsHydrated] = useState(false)
+
+  // Sync with localStorage on mount
+  useEffect(() => {
+    const savedStatus = localStorage.getItem("macbook-power-status") as any
+    if (savedStatus === "on") {
+      setPowerStatus("on")
+    } else {
+      setPowerStatus("off")
+    }
+    setIsHydrated(true)
+  }, [])
+
+  const handlePowerOn = () => {
+    setPowerStatus("booting")
+  }
+
+  const handleBootComplete = () => {
+    setPowerStatus("on")
+    localStorage.setItem("macbook-power-status", "on")
+  }
+
+  const handleShutdown = () => {
+    setPowerStatus("shutting-down")
+    // Delay to show shutdown animation
+    setTimeout(() => {
+      setPowerStatus("off")
+      localStorage.setItem("macbook-power-status", "off")
+    }, 1500)
+  }
+
+  if (!isHydrated) return <div className="fixed inset-0 bg-black" />
+
   return (
     <SettingsProvider>
       <WindowProvider>
-        <PageContent />
+        <div className="h-screen w-screen bg-black overflow-hidden select-none">
+          <AnimatePresence mode="wait">
+            {powerStatus === "off" && (
+              <motion.div
+                key="off"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="h-full w-full"
+              >
+                <BootScreen mode="off" onPowerOn={handlePowerOn} />
+              </motion.div>
+            )}
+
+            {powerStatus === "booting" && (
+              <motion.div
+                key="booting"
+                initial={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="h-full w-full"
+              >
+                <BootScreen mode="boot" onComplete={handleBootComplete} />
+              </motion.div>
+            )}
+
+            {powerStatus === "shutting-down" && (
+              <motion.div
+                key="shutting-down"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="h-full w-full"
+              >
+                <BootScreen mode="shutdown" />
+              </motion.div>
+            )}
+
+            {powerStatus === "on" && (
+              <motion.div
+                key="desktop"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 1, ease: "easeOut" }}
+                className="h-full w-full"
+              >
+                <PageContent onShutdown={handleShutdown} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </WindowProvider>
     </SettingsProvider>
   )
