@@ -13,7 +13,11 @@ import {
 } from "@/components/ui/menubar"
 import { cn } from "@/lib/utils"
 
-export function MenuBar() {
+interface MenuBarProps {
+  onSearchClick?: () => void
+}
+
+export function MenuBar({ onSearchClick }: MenuBarProps) {
   const [date, setDate] = React.useState(new Date())
 
   React.useEffect(() => {
@@ -109,7 +113,10 @@ export function MenuBar() {
         <div className="flex items-center gap-2 sm:gap-3">
           <Wifi className="h-4 w-4 hidden sm:block" />
           <Battery className="h-4 w-4 rotate-90" />
-          <Search className="h-4 w-4 hidden md:block" />
+          <Search 
+            className="h-4 w-4 hidden md:block cursor-default hover:text-primary transition-colors" 
+            onClick={onSearchClick}
+          />
           <ListFilter className="h-4 w-4 hidden lg:block" />
         </div>
         <div className="hover:bg-white/10 px-2 py-0.5 rounded cursor-default transition-colors whitespace-nowrap">

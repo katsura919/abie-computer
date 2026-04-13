@@ -1,30 +1,16 @@
 "use client"
 
 import React, { useState } from "react"
-import { 
-  User, 
-  Settings, 
-  Briefcase, 
-  Layout, 
-  Zap, 
-  FolderLock, 
-  Mail, 
-  FileText 
-} from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { Separator } from "@/components/ui/separator"
 import { useWindowManager } from "@/hooks/use-window-manager"
+import { APPS } from "@/lib/constants"
 
 const DOCK_ITEMS = [
-  { id: "about", icon: User, label: "About", color: "bg-blue-500" },
-  { id: "experience", icon: Briefcase, label: "Experience", color: "bg-gray-700" },
-  { id: "works", icon: Layout, label: "Works", color: "bg-pink-500" },
-  { id: "skills", icon: Zap, label: "Skills", color: "bg-yellow-500" },
-  { id: "projects", icon: FolderLock, label: "Projects", color: "bg-orange-500" },
-  { id: "contact", icon: Mail, label: "Contact", color: "bg-green-500" },
+  ...APPS.filter(app => app.id !== "settings").map(app => ({ ...app, type: "app" })),
   { id: "separator", type: "separator" },
-  { id: "settings", icon: Settings, label: "Settings", color: "bg-gray-400" },
+  { ...(APPS.find(app => app.id === "settings") || APPS[APPS.length - 1]), type: "app" },
 ]
 
 export function Dock() {
@@ -49,7 +35,10 @@ export function Dock() {
               key={item.id} 
               item={item} 
               isOpen={windows.some(w => w.id === item.id)}
-              onOpen={() => item.label && openWindow(item.id, item.label)}
+              onOpen={() => {
+                const app = item as { id: string; label: string }
+                if (app.label) openWindow(app.id, app.label)
+              }}
             />
           )
         })}
