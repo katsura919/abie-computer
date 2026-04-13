@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { useState } from "react"
 import { 
   User, 
   Settings, 
@@ -11,6 +11,7 @@ import {
   Mail, 
   FileText 
 } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { Separator } from "@/components/ui/separator"
 import { useWindowManager } from "@/hooks/use-window-manager"
@@ -32,52 +33,76 @@ export function Dock() {
 
   return (
     <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
-      <div className="flex items-end gap-2 px-3 py-2 glass rounded-2xl border-white/20 shadow-2xl overflow-visible">
+      <div className="flex items-center gap-2 px-3 pt-2 pb-3 glass rounded-2xl border-white/20 shadow-2xl h-[70px]">
         {DOCK_ITEMS.map((item) => {
           if (item.type === "separator") {
             return (
               <Separator 
                 key={item.id} 
                 orientation="vertical" 
-                className="h-10 w-[1px] bg-white/20 mx-1 mb-1" 
+                className="h-10 w-[1px] bg-white/20 mx-1" 
               />
             )
           }
 
-          const Icon = item.icon!
-          const isOpen = windows.some(w => w.id === item.id)
-          
           return (
-            <div
-              key={item.id}
-              className="group relative flex flex-col items-center gap-1"
-              onClick={() => item.label && openWindow(item.id, item.label)}
-            >
-              {/* Tooltip */}
-              <div className="absolute -top-10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none glass px-2 py-1 rounded text-[12px] font-medium whitespace-nowrap shadow-md">
-                {item.label}
-              </div>
-
-              {/* Icon Container */}
-              <div 
-                className={cn(
-                  "w-12 h-12 rounded-xl flex items-center justify-center text-white shadow-lg cursor-default transition-all duration-300 ease-out",
-                  "group-hover:w-16 group-hover:h-16 group-hover:-translate-y-2",
-                  "active:scale-90 active:brightness-90",
-                  item.color
-                )}
-              >
-                <Icon className={cn("transition-all duration-300", "w-6 h-6 group-hover:w-8 group-hover:h-8")} />
-              </div>
-
-              {/* Active Indicator */}
-              <div className={cn(
-                "w-1 h-1 bg-white/60 rounded-full transition-all duration-300",
-                isOpen ? "opacity-100 scale-100" : "opacity-0 scale-50"
-              )} />
-            </div>
+            <DockItem 
+              key={item.id} 
+              item={item} 
+              isOpen={windows.some(w => w.id === item.id)}
+              onOpen={() => item.label && openWindow(item.id, item.label)}
+            />
           )
         })}
+      </div>
+    </div>
+  )
+}
+
+function DockItem({ item, isOpen, onOpen }: { item: any, isOpen: boolean, onOpen: () => void }) {
+  const [isHovered, setIsHovered] = useState(false)
+  const Icon = item.icon!
+
+  return (
+    <div
+      className="relative flex flex-col items-center justify-center w-12 h-12"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={onOpen}
+    >
+      {/* Tooltip with Smooth Pop-in */}
+      <AnimatePresence>
+        {isHovered && (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.8, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: 10 }}
+            transition={{ type: "spring", damping: 15, stiffness: 400 }}
+            className="absolute -top-16 pointer-events-none glass px-2 py-1 rounded text-[12px] font-medium whitespace-nowrap shadow-md z-50"
+          >
+            {item.label}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Icon Container */}
+      <motion.div 
+        animate={isHovered ? { scale: 1.3, y: -12 } : { scale: 1, y: 0 }}
+        transition={{ type: "spring", stiffness: 400, damping: 25 }}
+        className={cn(
+          "w-12 h-12 rounded-xl flex items-center justify-center text-white shadow-lg cursor-default relative",
+          item.color
+        )}
+      >
+        <Icon className="w-6 h-6" />
+      </motion.div>
+
+      {/* Active Indicator with spacing */}
+      <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 flex items-center justify-center h-1">
+        <div className={cn(
+          "w-1 h-1 bg-white/70 rounded-full transition-all duration-300 shadow-[0_0_4px_rgba(255,255,255,0.4)]",
+          isOpen ? "opacity-100 scale-100" : "opacity-0 scale-50"
+        )} />
       </div>
     </div>
   )
