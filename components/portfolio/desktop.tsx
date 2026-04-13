@@ -7,6 +7,7 @@ import { useSettings } from "@/hooks/use-settings"
 import { WindowFrame } from "./window-frame"
 import { AboutMe } from "./apps/about-me"
 import { Settings } from "./apps/settings"
+import { Experience } from "./apps/experience"
 import { AnimatePresence } from "framer-motion"
 
 interface DesktopProps {
@@ -24,6 +25,8 @@ export function Desktop({ children, className }: DesktopProps) {
         return <AboutMe />
       case "settings":
         return <Settings />
+      case "experience":
+        return <Experience />
       default:
         return <div className="p-8 text-foreground/50">App content for {id} coming soon...</div>
     }

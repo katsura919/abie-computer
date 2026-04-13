@@ -56,10 +56,10 @@ export function WindowProvider({ children }: { children: React.ReactNode }) {
         isMinimized: false,
         isMaximized: false,
         zIndex: maxZIndex + 1,
-        width: 600,
-        height: 400,
-        x: "25%",
-        y: "15%"
+        width: 1000,
+        height: 700,
+        x: "15%",
+        y: "10%"
       }
       setActiveWindowId(id)
       setMaxZIndex(prevZ => prevZ + 1)
