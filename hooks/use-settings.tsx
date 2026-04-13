@@ -3,9 +3,12 @@
 import React, { createContext, useContext, useState, useEffect } from "react"
 
 export const WALLPAPERS = [
-  { id: "sonoma", name: "Sonoma", value: "radial-gradient(ellipse at top right, #60a5fa, #a855f7, #fb923c)" },
-  { id: "ventua", name: "Ventura", value: "linear-gradient(to right bottom, #fb7185, #a21caf, #6366f1)" },
-  { id: "monterey", name: "Monterey", value: "linear-gradient(to right top, #051937, #004d7a, #008793, #00bf72, #a8eb12)" },
+  { id: "sequoia", name: "Sequoia", value: "url('/assets/wallpaper/wallpaper-1.jpg')" },
+  { id: "sonoma", name: "Sonoma", value: "url('/assets/wallpaper/wallpaper-2.jpg')" },
+  { id: "monterey-photo", name: "Monterey Photo", value: "url('/assets/wallpaper/wallpaper-3.jpg')" },
+  { id: "gradient-1", name: "Sonoma Gradient", value: "radial-gradient(ellipse at top right, #60a5fa, #a855f7, #fb923c)" },
+  { id: "gradient-2", name: "Ventura Gradient", value: "linear-gradient(to right bottom, #fb7185, #a21caf, #6366f1)" },
+  { id: "gradient-3", name: "Monterey Gradient", value: "linear-gradient(to right top, #051937, #004d7a, #008793, #00bf72, #a8eb12)" },
   { id: "dark", name: "Dark Orbit", value: "linear-gradient(to bottom, #111827, #000000)" },
 ]
 

@@ -64,7 +64,13 @@ export function Desktop({ children, className }: DesktopProps) {
         "relative h-screen w-screen overflow-hidden bg-cover bg-center flex flex-col transition-all duration-700 ease-in-out",
         className
       )}
-      style={{ background: wallpaper }}
+      style={{ 
+        backgroundImage: wallpaper, 
+        backgroundSize: "cover", 
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundColor: "black"
+      }}
       onContextMenu={handleContextMenu}
     >
       {/* Context Menu */}
