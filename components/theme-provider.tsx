@@ -10,7 +10,8 @@ function ThemeProvider({
   return (
     <NextThemesProvider
       attribute="class"
-      defaultTheme="system"
+      defaultTheme="rose"
+      themes={["light", "dark", "rose"]}
       enableSystem
       disableTransitionOnChange
       {...props}
@@ -35,7 +36,7 @@ function isTypingTarget(target: EventTarget | null) {
 }
 
 function ThemeHotkey() {
-  const { resolvedTheme, setTheme } = useTheme()
+  const { theme, setTheme } = useTheme()
 
   React.useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -55,7 +56,10 @@ function ThemeHotkey() {
         return
       }
 
-      setTheme(resolvedTheme === "dark" ? "light" : "dark")
+      const themes = ["light", "dark", "rose"]
+      const currentIndex = themes.indexOf(theme || "light")
+      const nextIndex = (currentIndex + 1) % themes.length
+      setTheme(themes[nextIndex])
     }
 
     window.addEventListener("keydown", onKeyDown)
@@ -63,7 +67,7 @@ function ThemeHotkey() {
     return () => {
       window.removeEventListener("keydown", onKeyDown)
     }
-  }, [resolvedTheme, setTheme])
+  }, [theme, setTheme])
 
   return null
 }

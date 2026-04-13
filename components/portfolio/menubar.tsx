@@ -31,7 +31,7 @@ export function MenuBar() {
   })
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 h-8 flex items-center justify-between px-4 glass text-foreground/90 text-[13px] font-medium select-none">
+    <header className="bg-background fixed top-0 left-0 right-0 z-50 h-8 flex items-center justify-between px-4  text-foreground/90 text-[13px] font-medium select-none">
       <div className="flex items-center gap-4">
         <Menubar className="border-none bg-transparent shadow-none h-auto p-0 gap-0">
           <MenubarMenu>

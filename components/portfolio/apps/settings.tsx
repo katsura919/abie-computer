@@ -18,7 +18,7 @@ export function Settings() {
         <h2 className="text-sm font-semibold flex items-center gap-2 text-muted-foreground uppercase tracking-wider">
           <Palette className="w-4 h-4" /> Appearance
         </h2>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           <button 
             onClick={() => setTheme("light")}
             className={cn(
@@ -42,6 +42,18 @@ export function Settings() {
               <Moon className="w-8 h-8 text-blue-400" />
             </div>
             <span className="text-xs font-medium">Dark</span>
+          </button>
+          <button 
+            onClick={() => setTheme("rose")}
+            className={cn(
+              "flex flex-col items-center gap-3 p-4 rounded-xl border transition-all",
+              theme === "rose" ? "bg-white/20 border-white/40 ring-2 ring-primary" : "bg-white/5 border-white/10 hover:bg-white/10"
+            )}
+          >
+            <div className="w-full h-20 rounded bg-[#f9f5f2] border border-black/5 flex items-center justify-center">
+              <Palette className="w-8 h-8 text-[#e3a99c]" />
+            </div>
+            <span className="text-xs font-medium">Rose</span>
           </button>
         </div>
       </section>

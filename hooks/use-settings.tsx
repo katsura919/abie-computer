@@ -10,6 +10,7 @@ export const WALLPAPERS = [
 ]
 
 export const ACCENT_COLORS = [
+  { id: "rose", name: "Rose", value: "#e3a99c" },
   { id: "blue", name: "Blue", value: "#3b82f6" },
   { id: "purple", name: "Purple", value: "#a855f7" },
   { id: "pink", name: "Pink", value: "#ec4899" },

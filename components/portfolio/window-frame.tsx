@@ -42,13 +42,13 @@ export function WindowFrame({ id, title, children, zIndex, isMaximized }: Window
       onPointerDown={() => focusWindow(id)}
       style={{ zIndex }}
       className={cn(
-        "absolute flex flex-col glass rounded-xl shadow-2xl overflow-hidden border border-white/20 select-none",
-        isActive ? "ring-1 ring-white/30" : "opacity-90"
+        "absolute flex flex-col bg-background rounded-xl shadow-2xl overflow-hidden border border-border/40 select-none transition-all duration-300",
+        isActive ? "ring-1 ring-primary/40 shadow-2xl" : "opacity-90"
       )}
     >
       {/* Title Bar */}
       <div 
-        className="h-9 glass border-b border-white/10 flex items-center justify-between px-3 cursor-default shrink-0"
+        className="h-9 glass border-b border-border/20 flex items-center justify-between px-3 cursor-default shrink-0"
         onDoubleClick={() => maximizeWindow(id)}
         onPointerDown={(e) => dragControls.start(e)}
       >
