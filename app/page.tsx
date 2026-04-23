@@ -7,6 +7,9 @@ import { Spotlight } from "@/components/portfolio/spotlight"
 import { WindowProvider, useWindowManager } from "@/hooks/use-window-manager"
 import { SettingsProvider } from "@/hooks/use-settings"
 import { BootScreen } from "@/components/portfolio/boot-screen"
+import { DesktopWidgets } from "@/components/portfolio/desktop-widgets"
+import { DesktopFileIcons } from "@/components/portfolio/desktop-file-icons"
+import { StickyNotesManager } from "@/components/portfolio/sticky-notes-manager"
 import { motion, AnimatePresence } from "framer-motion"
 
 function PageContent({ onShutdown }: { onShutdown: () => void }) {
@@ -46,15 +49,20 @@ function PageContent({ onShutdown }: { onShutdown: () => void }) {
         onShutdown={onShutdown}
       />
       <Desktop>
-        {/* Desktop Content Area */}
-        <div className="p-8">
-          <div className="grid grid-cols-1 gap-8 w-fit">
-            <div className="flex flex-col items-center gap-2 group cursor-default">
-              <div className="w-16 h-16 rounded-xl bg-blue-500/80 glass shadow-lg flex items-center justify-center transition-all active:scale-95 group-hover:brightness-110">
-                <div className="w-8 h-8 border-4 border-white rounded-full bg-white/20" />
-              </div>
-              <span className="text-white text-[11px] font-medium [text-shadow:_0_1px_2px_rgb(0_0_0_/_60%)]">Macintosh HD</span>
-            </div>
+        <div className="relative h-full w-full overflow-hidden">
+          {/* Left column — file icons */}
+          <div className="absolute top-4 left-4 z-10">
+            <DesktopFileIcons />
+          </div>
+
+          {/* Right column — widgets (hidden on small screens) */}
+          <div className="absolute top-4 right-4 z-10 hidden sm:block">
+            <DesktopWidgets />
+          </div>
+
+          {/* Sticky notes — draggable, hidden on small screens */}
+          <div className="hidden sm:block">
+            <StickyNotesManager />
           </div>
         </div>
       </Desktop>

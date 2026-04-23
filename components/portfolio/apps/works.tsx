@@ -66,37 +66,37 @@ export function Works() {
   const [iframeKey, setIframeKey] = useState(0)
 
   return (
-    <div className="flex h-full overflow-hidden">
-      {/* Sidebar */}
-      <div className="w-56 shrink-0 border-r border-white/10 flex flex-col overflow-y-auto bg-black/10">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-foreground/30 px-4 pt-5 pb-2">
+    <div className="flex flex-col md:flex-row h-full overflow-hidden">
+      {/* Sidebar — horizontal scroll on mobile, vertical list on desktop */}
+      <div className="shrink-0 border-b border-white/10 md:border-b-0 md:border-r md:w-56 flex flex-row md:flex-col overflow-x-auto md:overflow-x-hidden overflow-y-hidden md:overflow-y-auto bg-black/10 no-scrollbar">
+        <p className="hidden md:block text-[10px] font-bold uppercase tracking-widest text-foreground/30 px-4 pt-5 pb-2 shrink-0">
           Works
         </p>
         {PROJECTS.map((p) => (
           <button
             key={p.id}
             onClick={() => { setSelected(p); setIframeKey(k => k + 1) }}
-            className={`flex items-center gap-3 px-4 py-3 text-left transition-colors group ${
+            className={`flex items-center gap-2 md:gap-3 px-3 md:px-4 py-3 text-left transition-colors shrink-0 md:w-full ${
               selected.id === p.id
                 ? "bg-white/10 text-foreground"
                 : "hover:bg-white/5 text-foreground/60 hover:text-foreground/90"
             }`}
           >
             <span className={`w-2 h-2 rounded-full shrink-0 ${p.dot}`} />
-            <span className="text-[13px] font-medium leading-tight">{p.title}</span>
+            <span className="text-[12px] md:text-[13px] font-medium leading-tight whitespace-nowrap md:whitespace-normal">{p.title}</span>
           </button>
         ))}
       </div>
 
       {/* Preview Panel */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden min-h-0">
         {/* Toolbar */}
-        <div className="flex items-center justify-between px-4 py-2.5 border-b border-white/10 bg-black/5 shrink-0">
-          <div className="flex flex-col">
-            <span className="text-sm font-semibold text-foreground">{selected.title}</span>
+        <div className="flex items-center justify-between px-3 md:px-4 py-2 md:py-2.5 border-b border-white/10 bg-black/5 shrink-0">
+          <div className="flex flex-col min-w-0">
+            <span className="text-sm font-semibold text-foreground truncate">{selected.title}</span>
             <span className="text-[10px] text-foreground/40 uppercase tracking-wider">{selected.tag}</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={() => setIframeKey(k => k + 1)}
               title="Reload"
@@ -116,13 +116,13 @@ export function Works() {
           </div>
         </div>
 
-        {/* Description strip */}
-        <div className="px-4 py-2.5 border-b border-white/5 shrink-0">
-          <p className="text-[12px] text-foreground/50 leading-relaxed">{selected.description}</p>
+        {/* Description strip — 2-line clamp on mobile */}
+        <div className="px-3 md:px-4 py-2 md:py-2.5 border-b border-white/5 shrink-0">
+          <p className="text-[12px] text-foreground/50 leading-relaxed line-clamp-2 md:line-clamp-none">{selected.description}</p>
         </div>
 
         {/* iframe */}
-        <div className="flex-1 relative overflow-hidden">
+        <div className="flex-1 relative overflow-hidden min-h-0">
           <AnimatePresence mode="wait">
             <motion.div
               key={selected.id}
