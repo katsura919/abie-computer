@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { Separator } from "@/components/ui/separator"
 import { useWindowManager } from "@/hooks/use-window-manager"
@@ -17,7 +17,10 @@ export function Dock() {
   const { openWindow, windows } = useWindowManager()
 
   return (
-    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-full px-4 flex justify-center">
+    <div
+      className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-full px-4 flex justify-center"
+      style={{ bottom: "max(16px, env(safe-area-inset-bottom))" }}
+    >
       <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 pt-2 pb-3 glass rounded-2xl border-white/20 shadow-2xl h-[60px] sm:h-[70px] max-w-full no-scrollbar">
         {DOCK_ITEMS.map((item) => {
           if (item.type === "separator") {
@@ -49,6 +52,7 @@ export function Dock() {
 
 function DockItem({ item, isOpen, onOpen }: { item: any, isOpen: boolean, onOpen: () => void }) {
   const [isHovered, setIsHovered] = useState(false)
+  const shouldReduceMotion = useReducedMotion()
   const Icon = item.icon!
 
   return (
@@ -74,9 +78,9 @@ function DockItem({ item, isOpen, onOpen }: { item: any, isOpen: boolean, onOpen
       </AnimatePresence>
 
       {/* Icon Container */}
-      <motion.div 
-        animate={isHovered ? { scale: 1.2, y: -8 } : { scale: 1, y: 0 }}
-        transition={{ type: "spring", stiffness: 400, damping: 25 }}
+      <motion.div
+        animate={!shouldReduceMotion && isHovered ? { scale: 1.2, y: -8 } : { scale: 1, y: 0 }}
+        transition={shouldReduceMotion ? { duration: 0 } : { type: "spring", stiffness: 400, damping: 25 }}
         className={cn(
           "w-10 sm:w-12 h-10 sm:h-12 rounded-lg sm:rounded-xl flex items-center justify-center text-white shadow-lg cursor-default relative",
           item.color

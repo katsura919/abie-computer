@@ -24,8 +24,10 @@ export const ACCENT_COLORS = [
 type SettingsContextType = {
   wallpaper: string
   accentColor: string
+  reduceMotion: boolean
   setWallpaper: (value: string) => void
   setAccentColor: (value: string) => void
+  setReduceMotion: (value: boolean) => void
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined)
@@ -33,13 +35,20 @@ const SettingsContext = createContext<SettingsContextType | undefined>(undefined
 export function SettingsProvider({ children }: { children: React.ReactNode }) {
   const [wallpaper, setWallpaperState] = useState(WALLPAPERS[0].value)
   const [accentColor, setAccentColorState] = useState(ACCENT_COLORS[0].value)
+  const [reduceMotion, setReduceMotionState] = useState(false)
 
   // Load from localStorage
   useEffect(() => {
     const savedWallpaper = localStorage.getItem("macbook-wallpaper")
     const savedAccent = localStorage.getItem("macbook-accent")
+    const savedMotion = localStorage.getItem("macbook-reduce-motion")
     if (savedWallpaper) setWallpaperState(savedWallpaper)
     if (savedAccent) setAccentColorState(savedAccent)
+    if (savedMotion !== null) {
+      setReduceMotionState(savedMotion === "true")
+    } else if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setReduceMotionState(true)
+    }
   }, [])
 
   const setWallpaper = (value: string) => {
@@ -53,17 +62,24 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     document.documentElement.style.setProperty("--primary", value)
   }
 
+  const setReduceMotion = (value: boolean) => {
+    setReduceMotionState(value)
+    localStorage.setItem("macbook-reduce-motion", String(value))
+  }
+
   // Apply accent color on mount
   useEffect(() => {
     document.documentElement.style.setProperty("--primary", accentColor)
   }, [accentColor])
 
   return (
-    <SettingsContext.Provider value={{ 
-      wallpaper, 
-      accentColor, 
-      setWallpaper, 
-      setAccentColor 
+    <SettingsContext.Provider value={{
+      wallpaper,
+      accentColor,
+      reduceMotion,
+      setWallpaper,
+      setAccentColor,
+      setReduceMotion,
     }}>
       {children}
     </SettingsContext.Provider>

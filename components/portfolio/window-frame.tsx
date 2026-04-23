@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { motion, AnimatePresence, useDragControls } from "framer-motion"
+import { motion, useDragControls, useReducedMotion } from "framer-motion"
 import { X, Minus, Maximize2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useWindowManager } from "@/hooks/use-window-manager"
@@ -18,7 +18,8 @@ export function WindowFrame({ id, title, children, zIndex, isMaximized }: Window
   const { closeWindow, minimizeWindow, maximizeWindow, focusWindow, activeWindowId, windows, updateWindowRect } = useWindowManager()
   const isActive = activeWindowId === id
   const dragControls = useDragControls()
-  
+  const shouldReduceMotion = useReducedMotion()
+
   const [isResizing, setIsResizing] = React.useState(false)
   
   const windowState = windows.find(w => w.id === id)
@@ -29,25 +30,28 @@ export function WindowFrame({ id, title, children, zIndex, isMaximized }: Window
 
   return (
     <motion.div
-      initial={{ scale: 0.8, opacity: 0 }}
+      initial={shouldReduceMotion ? { opacity: 0 } : { scale: 0.8, opacity: 0 }}
       animate={{
         scale: 1,
         opacity: 1,
         width: isMaximized ? "calc(100% - 16px)" : width,
-        height: isMaximized ? "calc(100vh - 40px)" : height,
+        height: isMaximized ? "calc(100dvh - 120px)" : height,
         top: isMaximized ? 34 : y,
         left: isMaximized ? 8 : x,
       }}
-      transition={{ 
-        type: "spring", 
-        damping: 25, 
-        stiffness: 300,
-        width: isResizing ? { duration: 0 } : undefined,
-        height: isResizing ? { duration: 0 } : undefined,
-        top: isResizing ? { duration: 0 } : undefined,
-        left: isResizing ? { duration: 0 } : undefined
-      }}
-      exit={{ scale: 0.8, opacity: 0 }}
+      transition={shouldReduceMotion
+        ? { duration: 0.15 }
+        : {
+            type: "spring",
+            damping: 25,
+            stiffness: 300,
+            width: isResizing ? { duration: 0 } : undefined,
+            height: isResizing ? { duration: 0 } : undefined,
+            top: isResizing ? { duration: 0 } : undefined,
+            left: isResizing ? { duration: 0 } : undefined,
+          }
+      }
+      exit={shouldReduceMotion ? { opacity: 0 } : { scale: 0.8, opacity: 0 }}
       drag={!isMaximized && !isResizing}
       dragControls={dragControls}
       dragListener={false}

@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect, useRef } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
 import { Search, Command, ArrowRight } from "lucide-react"
 import { APPS } from "@/lib/constants"
 import { useWindowManager } from "@/hooks/use-window-manager"
@@ -17,6 +17,7 @@ export function Spotlight({ isOpen, onClose }: SpotlightProps) {
   const [selectedIndex, setSelectedIndex] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
   const { openWindow } = useWindowManager()
+  const shouldReduceMotion = useReducedMotion()
 
   // Filter apps based on query
   const filteredApps = APPS.filter(app => 
@@ -59,7 +60,7 @@ export function Spotlight({ isOpen, onClose }: SpotlightProps) {
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[15vh] px-4">
+        <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[8vh] sm:pt-[15vh] px-4">
           {/* Backdrop */}
           <motion.div 
             initial={{ opacity: 0 }}
@@ -71,9 +72,9 @@ export function Spotlight({ isOpen, onClose }: SpotlightProps) {
 
           {/* Search Box */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: -20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -20 }}
+            initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.95, y: -20 }}
+            animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 }}
+            exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.95, y: -20 }}
             className="relative w-full max-w-[600px] glass border-white/20 shadow-2xl overflow-hidden rounded-2xl flex flex-col"
           >
             <div className="flex items-center gap-3 p-4 border-b border-white/10">
@@ -95,7 +96,7 @@ export function Spotlight({ isOpen, onClose }: SpotlightProps) {
               </div>
             </div>
 
-            <div className="max-h-[400px] overflow-y-auto p-2">
+            <div className="max-h-[40vh] sm:max-h-[400px] overflow-y-auto p-2">
               {filteredApps.length > 0 ? (
                 filteredApps.map((app, index) => (
                   <button

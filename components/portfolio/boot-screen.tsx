@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
 import { Power } from "lucide-react"
 
 interface BootScreenProps {
@@ -12,6 +12,7 @@ interface BootScreenProps {
 
 export function BootScreen({ mode, onComplete, onPowerOn }: BootScreenProps) {
   const [progress, setProgress] = useState(0)
+  const shouldReduceMotion = useReducedMotion()
 
   useEffect(() => {
     if (mode !== "boot") return
@@ -41,25 +42,28 @@ export function BootScreen({ mode, onComplete, onPowerOn }: BootScreenProps) {
       <div className="fixed inset-0 z-[9999] bg-black flex items-center justify-center">
         <div className="flex flex-col items-center gap-8">
           <motion.button
-            initial={{ opacity: 0, scale: 0.8 }}
+            initial={{ opacity: 0, scale: shouldReduceMotion ? 1 : 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1.2, ease: "easeOut" }}
-            whileHover={{ scale: 1.08 }}
+            transition={{ duration: shouldReduceMotion ? 0.2 : 1.2, ease: "easeOut" }}
+            whileHover={shouldReduceMotion ? undefined : { scale: 1.08 }}
             whileTap={{ scale: 0.95 }}
             onClick={onPowerOn}
             className="relative w-20 h-20 rounded-full border border-white/20 flex items-center justify-center focus:outline-none group"
           >
-            {/* Pulse ring */}
-            <motion.span
-              className="absolute inset-0 rounded-full border border-white/10"
-              animate={{ scale: [1, 1.5], opacity: [0.4, 0] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
-            />
-            <motion.span
-              className="absolute inset-0 rounded-full border border-white/10"
-              animate={{ scale: [1, 1.5], opacity: [0.4, 0] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeOut", delay: 1 }}
-            />
+            {!shouldReduceMotion && (
+              <>
+                <motion.span
+                  className="absolute inset-0 rounded-full border border-white/10"
+                  animate={{ scale: [1, 1.5], opacity: [0.4, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
+                />
+                <motion.span
+                  className="absolute inset-0 rounded-full border border-white/10"
+                  animate={{ scale: [1, 1.5], opacity: [0.4, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeOut", delay: 1 }}
+                />
+              </>
+            )}
             <Power className="w-8 h-8 text-white/40 group-hover:text-white/80 transition-colors duration-300" />
           </motion.button>
 
@@ -78,12 +82,12 @@ export function BootScreen({ mode, onComplete, onPowerOn }: BootScreenProps) {
 
   return (
     <div className="fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center cursor-none">
-      <div className="flex flex-col items-center gap-24 -mt-10">
+      <div className="flex flex-col items-center gap-8 sm:gap-20">
         {/* Apple Logo SVG */}
         <motion.div
-           initial={mode === "boot" ? { opacity: 0, scale: 0.9 } : { opacity: 1, scale: 1 }}
-           animate={mode === "shutdown" ? { opacity: 0, scale: 0.95 } : { opacity: 1, scale: 1 }}
-           transition={{ duration: mode === "boot" ? 1.2 : 0.8, ease: "easeInOut" }}
+           initial={mode === "boot" ? { opacity: 0, scale: shouldReduceMotion ? 1 : 0.9 } : { opacity: 1, scale: 1 }}
+           animate={mode === "shutdown" ? { opacity: 0, scale: shouldReduceMotion ? 1 : 0.95 } : { opacity: 1, scale: 1 }}
+           transition={{ duration: shouldReduceMotion ? 0.2 : mode === "boot" ? 1.2 : 0.8, ease: "easeInOut" }}
         >
           <svg
             width="84"
@@ -91,7 +95,7 @@ export function BootScreen({ mode, onComplete, onPowerOn }: BootScreenProps) {
             viewBox="0 0 84 102"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            className="text-white fill-current"
+            className="text-white fill-current w-[60px] h-[73px] sm:w-[84px] sm:h-[102px]"
           >
             <path d="M71.0762 44.577C71.033 34.0041 79.5447 28.8504 79.9554 28.6127C75.0543 21.4651 67.4303 20.4497 64.7077 20.32 C58.2148 19.671 52 24.1804 48.7 24.1804C45.4116 24.1804 40.3551 20.4065 34.9317 20.5253C27.8443 20.6226 21.319 24.6665 17.6568 31.0298C10.2783 43.8856 15.8095 62.9103 22.95 73.1941C26.4393 78.2388 30.6094 83.8996 36.0645 83.7159C41.3039 83.5215 43.2917 80.3456 49.6183 80.3456C55.9038 80.3456 57.7024 83.7159 63.1575 83.6187C68.7212 83.5215 72.2969 78.5089 75.7648 73.4317C79.7834 67.5769 81.4255 61.9161 81.4904 61.6461C81.3391 61.5921 71.1843 57.7032 71.0762 44.577Z" />
             <path d="M57.6593 13.9137C60.5546 10.4353 62.5 5.58498 61.9599 0.745422C57.8115 0.907455 52.7993 3.511 49.8285 7.00021C47.1169 10.09 44.751 14.8256 45.4208 19.6004C49.9904 19.9893 54.7754 17.3858 57.6593 13.9137Z" />
@@ -100,7 +104,7 @@ export function BootScreen({ mode, onComplete, onPowerOn }: BootScreenProps) {
 
         {/* Progress Bar Container - Only show in boot mode */}
         {mode === "boot" && (
-          <div className="w-[180px] h-[4px] bg-white/20 rounded-full overflow-hidden">
+          <div className="w-full max-w-[180px] h-[4px] bg-white/20 rounded-full overflow-hidden">
             <motion.div
               className="h-full bg-white"
               initial={{ width: 0 }}
