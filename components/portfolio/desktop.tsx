@@ -10,6 +10,9 @@ import { AboutMe } from "./apps/about-me"
 import { Settings } from "./apps/settings"
 import { Experience } from "./apps/experience"
 import { Terminal } from "./apps/terminal"
+import { Works } from "./apps/works"
+import { Skills } from "./apps/skills"
+import { Contact } from "./apps/contact"
 import { AnimatePresence, motion } from "framer-motion"
 import { Monitor, Image as ImageIcon, Info, Plus } from "lucide-react"
 
@@ -49,6 +52,12 @@ export function Desktop({ children, className }: DesktopProps) {
         return <Settings />
       case "experience":
         return <Experience />
+      case "works":
+        return <Works />
+      case "skills":
+        return <Skills />
+      case "contact":
+        return <Contact />
       case "terminal":
         return <Terminal />
       case "note":

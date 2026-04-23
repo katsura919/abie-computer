@@ -39,14 +39,39 @@ export function BootScreen({ mode, onComplete, onPowerOn }: BootScreenProps) {
   if (mode === "off") {
     return (
       <div className="fixed inset-0 z-[9999] bg-black flex items-center justify-center">
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={onPowerOn}
-          className="w-20 h-20 rounded-full border border-white/10 flex items-center justify-center transition-all hover:border-white/40 focus:outline-none group"
-        >
-          <Power className="w-8 h-8 text-white/20 group-hover:text-white/60 transition-colors" />
-        </motion.button>
+        <div className="flex flex-col items-center gap-8">
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1.2, ease: "easeOut" }}
+            whileHover={{ scale: 1.08 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={onPowerOn}
+            className="relative w-20 h-20 rounded-full border border-white/20 flex items-center justify-center focus:outline-none group"
+          >
+            {/* Pulse ring */}
+            <motion.span
+              className="absolute inset-0 rounded-full border border-white/10"
+              animate={{ scale: [1, 1.5], opacity: [0.4, 0] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
+            />
+            <motion.span
+              className="absolute inset-0 rounded-full border border-white/10"
+              animate={{ scale: [1, 1.5], opacity: [0.4, 0] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeOut", delay: 1 }}
+            />
+            <Power className="w-8 h-8 text-white/40 group-hover:text-white/80 transition-colors duration-300" />
+          </motion.button>
+
+          <motion.p
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.8, ease: "easeOut" }}
+            className="text-white/30 text-sm tracking-[0.2em] uppercase font-light select-none"
+          >
+            Press to turn on
+          </motion.p>
+        </div>
       </div>
     )
   }

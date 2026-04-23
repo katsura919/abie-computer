@@ -1,6 +1,6 @@
 "use client"
 
-import React, { createContext, useContext, useState, useCallback } from "react"
+import React, { createContext, useContext, useState, useCallback, useRef } from "react"
 
 export type WindowState = {
   id: string
@@ -33,6 +33,12 @@ export function WindowProvider({ children }: { children: React.ReactNode }) {
   const [windows, setWindows] = useState<WindowState[]>([])
   const [activeWindowId, setActiveWindowId] = useState<string | null>(null)
   const [maxZIndex, setMaxZIndex] = useState(10)
+  const cascadeIndexRef = useRef(0)
+
+  const CASCADE_OFFSET = 30
+  const CASCADE_BASE_X = 80
+  const CASCADE_BASE_Y = 60
+  const CASCADE_MAX = 8
 
   const focusWindow = useCallback((id: string) => {
     setActiveWindowId(id)
@@ -50,17 +56,19 @@ export function WindowProvider({ children }: { children: React.ReactNode }) {
         return prev
       }
       const isMobile = typeof window !== "undefined" && window.innerWidth < 768
+      const cascadeStep = cascadeIndexRef.current % CASCADE_MAX
+      cascadeIndexRef.current += 1
       const newWindow = {
         id,
         title,
         isOpen: true,
         isMinimized: false,
-        isMaximized: isMobile, // Default to maximized on mobile for better UX
+        isMaximized: isMobile,
         zIndex: maxZIndex + 1,
         width: isMobile ? window.innerWidth * 0.9 : 1000,
         height: isMobile ? window.innerHeight * 0.7 : 700,
-        x: isMobile ? "5%" : "15%",
-        y: isMobile ? "8%" : "10%"
+        x: isMobile ? "5%" : CASCADE_BASE_X + cascadeStep * CASCADE_OFFSET,
+        y: isMobile ? "8%" : CASCADE_BASE_Y + cascadeStep * CASCADE_OFFSET,
       }
       setActiveWindowId(id)
       setMaxZIndex(prevZ => prevZ + 1)

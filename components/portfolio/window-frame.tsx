@@ -30,12 +30,12 @@ export function WindowFrame({ id, title, children, zIndex, isMaximized }: Window
   return (
     <motion.div
       initial={{ scale: 0.8, opacity: 0 }}
-      animate={{ 
-        scale: 1, 
+      animate={{
+        scale: 1,
         opacity: 1,
         width: isMaximized ? "calc(100% - 16px)" : width,
-        height: isMaximized ? "calc(100% - 160px)" : height,
-        top: isMaximized ? 40 : y,
+        height: isMaximized ? "calc(100vh - 40px)" : height,
+        top: isMaximized ? 34 : y,
         left: isMaximized ? 8 : x,
       }}
       transition={{ 
@@ -62,7 +62,7 @@ export function WindowFrame({ id, title, children, zIndex, isMaximized }: Window
       style={{ zIndex }}
       className={cn(
         "absolute flex flex-col bg-background rounded-xl shadow-2xl overflow-hidden border border-border/40 select-none",
-        "max-w-[calc(100vw-16px)] max-h-[calc(100vh-120px)]",
+        "max-w-[100vw]",
         isActive ? "ring-1 ring-primary/40 shadow-2xl" : "opacity-90"
       )}
     >
